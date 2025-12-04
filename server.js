@@ -1,11 +1,12 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
+const dns = require('dns');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 dotenv.config();
-
+dns.setDefaultResultOrder('ipv4first');
 // Khởi tạo Gemini
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
@@ -77,11 +78,11 @@ app.post('/chat', async (req, res) => {
             [userId, 'ai', aiText]
         );
 
-        console.log("🤖 AI:", aiText);
+        console.log(" AI hiện lên và nói :", aiText);
         res.json({ reply: aiText });
 
     } catch (error) {
-        console.error("❌ Server Error:", error);
+        console.error(" Server Error:", error);
         res.status(500).json({ error: "Lỗi server", details: error.message });
     }
 });
