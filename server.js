@@ -50,6 +50,8 @@ async function getOrCreateUser(zaloUserId, displayName) {
     return result.insertId;
 }
 
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
 // === API /chat ===
 app.post('/chat', async (req, res) => {
     try {
@@ -68,10 +70,25 @@ app.post('/chat', async (req, res) => {
             [userId, 'user', message]
         );
 
-        // Gọi AI
+        // Gọi AI với cơ chế thử lại (retry)
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = await model.generateContent(message);
-        const aiText = result.response.text();
+        let aiText = '';
+        const maxRetries = 3;
+
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const result = await model.generateContent(message);
+                aiText = result.response.text();
+                break; // Thành công, thoát khỏi vòng lặp
+            } catch (err) {
+                console.error(`Lỗi gọi AI lần ${attempt}:`, err.message);
+                if (attempt === maxRetries) {
+                    // Nếu đây là lần thử cuối cùng, thì mới báo lỗi thực sự
+                    throw new Error(`Không thể gọi AI sau ${maxRetries} lần thử. Lỗi cuối: ${err.message}`);
+                }
+                await delay(1000 * attempt); // Chờ 1s, 2s, ... trước khi thử lại
+            }
+        }
 
         await pool.query(
             "INSERT INTO messages (user_id, sender, message_text) VALUES (?, ?, ?)",
