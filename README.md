@@ -4,13 +4,6 @@ Backend API dành cho Zalo Mini App, cho phép người dùng trò chuyện vớ
 
 Được xây dựng bằng Node.js (Express) + Google Generative AI SDK.
 
-🛠️ Yêu Cầu & Thiết Lập Ban Đầu
-1. Clone dự án & cài thư viện
-Bước	Lệnh	Mục đích
-1	git clone https://github.com/NHTuan2602/zalo_mini_app_ai	Tải mã nguồn
-2	cd zalo_mini_app_ai	Truy cập thư mục
-3	npm install	Cài dependencies
-⚙️ Cấu Hình Dự Án
 1. Cơ sở dữ liệu MySQL
 
 Tạo database:
